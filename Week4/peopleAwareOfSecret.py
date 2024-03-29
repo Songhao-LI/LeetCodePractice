@@ -1,7 +1,20 @@
 class Solution:
     def peopleAwareOfSecret(self, n: int, delay: int, forget: int) -> int:
-        dp, md = [1] + [0] * (forget - 1), 10 ** 9 + 7
-        for i in range(1, n):
-            dp[i % forget] = (md + dp[(i + forget - delay) % forget] - dp[i % forget] + (0 if i == 1 else dp[(i - 1) % forget])) % md
-        return sum(dp) % md
-    
+        f = [0] * forget
+        f[0] = 1
+
+        for day in range(n - 1):
+            for i in range(forget - 1, 0, -1):
+                # update to next date
+                f[i] = f[i - 1]
+
+            new_people = 0
+            for i in range(forget):
+                if i >= delay:
+                    new_people += f[i]
+            f[0] = new_people
+        
+        res = 0
+        for people in f:
+            res += people
+        return res % (10 ** 9 + 7)
